@@ -1,0 +1,81 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="octopusmiu's blog | sabuli | sabuli blog"><title>选择关系型or非关系型数据库？ | octopusmiu</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">选择关系型or非关系型数据库？</h1><a id="logo" href="/.">octopusmiu</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">选择关系型or非关系型数据库？</h1><div class="post-meta">Jun 16, 2016<span> | </span><span class="category"><a href="/categories/数据相关/">数据相关</a></span></div><div class="post-content"><p>规范的数据结构 &amp; 千万条以下的数据，关系型够用了（这么粗暴的结论会不会被打？2333）<br><a id="more"></a></p>
+<p><img src="http://7xsrru.com1.z0.glb.clouddn.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202016-06-16%20%E4%B8%8B%E5%8D%889.22.20.png" alt="img"></p>
+<p>写这篇时碰上ohmyzsh更新，放图镇楼，之后要抽时间认真研究下这个东西的用法（扔进待办事项flag</p>
+<hr>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>我需要录入2年的数据，关于每一节课的信息，以2小时为一单位。这样的数据无法设立主键，因为没有唯一值。但列出一列来计数又没有任何意义，因为这列主键不能和任何教师信息、校区信息等链表查询，提升查询速度还是要靠索引和视图。</p>
+<p>目前使用数据库的主要目的是连表做一些简单的计算操作，比如整个fy16财年的老生生均，40w＋的数据在excel中匹配由学员编号＋教师组别＋学科组等组成的唯一列，运算非常慢，同时还需要对某两列去重，每一步这样的操作都需要复制粘贴出一个新的sheet进行操作。以后的话希望能和python结合可以有新的模型预测一些数据，比如fy17财年各教学组的任务分配、奖金方案等。</p>
+<p>上学时简单的学了sql server，做完作业就扔一边了。那时对非关系型数据库只是几分钟带过，现在要重新梳理下两种数据库的优劣，找出最合适业务数据（以下称为目标数据）的数据库。</p>
+<h2 id="两种数据库对比"><a href="#两种数据库对比" class="headerlink" title="两种数据库对比"></a>两种数据库对比</h2><ul>
+<li>存储方式：数据表VS数据集<blockquote>
+<p>关系型：表格式，容易提取<br>非关系型：数据集的形式，像文档、键值或图结构</p>
+</blockquote>
+</li>
+</ul>
+<p>目标数据都是表格式的，除个别值，总体比较规范。</p>
+<ul>
+<li>表结构：预定义结构VS动态结构</li>
+</ul>
+<blockquote>
+<p>关系型：每列在建立表头时固定数据类型<br>非关系型：动态结构</p>
+</blockquote>
+<p>目标数据的大部分列是固定的数据类型，文本、数字、日期。</p>
+<ul>
+<li>存储规范化VS存储代价<blockquote>
+<p>关系型：遵循数据规范性，数据拆分为最小的逻辑表<br>非关系型：存储为一个整体</p>
+</blockquote>
+</li>
+</ul>
+<p>这是目前关系型最大的问题，目标数据需要可以重复的存在，拆分导入的成本很高，不拆分又体现不出关系型的一些优势。</p>
+<ul>
+<li>纵向扩容VS横向扩容<blockquote>
+<p>关系型：纵向扩展提高处理能力，相同数据集速度更快。<br>非关系型：横向扩展，可以添加节点来分担负载。</p>
+</blockquote>
+</li>
+</ul>
+<p>关系型表中提高的处理能力体现在多表操作时，如果目标数据本身就是一个大表，这个优势就没啥意义了吧？不是很明白非关系型数据库通过资源池添加更多普通数据库服务器（节点）的意义（应该是概念问题</p>
+<ul>
+<li>结构化查询VS非结构化查询<blockquote>
+<p>关系型：sql非常好用，索引非常好用<br>非关系型：unQL?</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>unQL</strong>需要深入了解一下……</p>
+<ul>
+<li>映射VS本地化<blockquote>
+<p>关系型：ORM层(对象关系映射)是位于关系型数据源和开发者使用的面向对象数据实体之间的一个映射层。<br>非关系型：应用程序中使用的对象通常序列化为JSon串，存储在NoSQL数据库的JSon文档中</p>
+</blockquote>
+</li>
+</ul>
+<p>不懂的两项内容，需要查询下<strong>ORM</strong>是否可以解决主键的问题。</p>
+<ul>
+<li>事务性VS纯扩展性<blockquote>
+<p>关系型：高事务型或复杂数据查询<br>非关系型：操作的扩展性和大数据量处理</p>
+</blockquote>
+</li>
+</ul>
+<p>目标数据还远算不上大数据，数据库中的事务具体指什么？</p>
+<ul>
+<li>ACID VS CAP<blockquote>
+<p>关系型：ACID属性(原子性，一致性，隔离性，持久性)保证数据完整性<br>非关系型：在CAP(一致性，可用性，分区容忍度)中的任意两项中选择，因为在基于节点的分布式系统中，很难做到三项都满足。</p>
+</blockquote>
+</li>
+</ul>
+<p>嗯，不懂<strong>CAP</strong></p>
+<ul>
+<li>数据VS大数据<blockquote>
+<p>关系型：规范的存储处理数据<br>非关系型：无模式的方式做数据管理</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="选择关系型"><a href="#选择关系型" class="headerlink" title="选择关系型"></a>选择关系型</h3><p>比较明确了，目标数据这么点简单内容还用不上NoSQL，然后看看orm吧～</p>
+<h2 id="附：NoSQL的更多信息-引自参考"><a href="#附：NoSQL的更多信息-引自参考" class="headerlink" title="附：NoSQL的更多信息[引自参考]"></a>附：NoSQL的更多信息[引自参考]</h2><ol>
+<li><p>CAP定理<br>在计算机科学中, CAP定理（CAP theorem）, 又被称作 布鲁尔定理（Brewer’s theorem）, 它指出对于一个分布式计算系统来说，不可能同时满足以下三点:<br>一致性(Consistency) (所有节点在同一时间具有相同的数据)<br>可用性(Availability) (保证每个请求不管成功或者失败都有响应)<br>分隔容忍(Partition tolerance) (系统中任意信息的丢失或失败不会影响系统的继续运作)<br>CAP理论的核心是：一个分布式系统不可能同时很好的满足一致性，可用性和分区容错性这三个需求，最多只能同时较好的满足两个。<br>因此，根据 CAP 原理将 NoSQL 数据库分成了满足 CA 原则、满足 CP 原则和满足 AP 原则三 大类：<br>CA - 单点集群，满足一致性，可用性的系统，通常在可扩展性上不太强大。<br>CP - 满足一致性，分区容忍必的系统，通常性能不是特别高。<br>AP - 满足可用性，分区容忍性的系统，通常可能对一致性要求低一些。<br><img src="http://7xsrru.com1.z0.glb.clouddn.com/cap-theoram-image.png" alt=""></p>
+</li>
+<li><p>NoSQL 数据库分类</p>
+</li>
+</ol>
+<table class="table table-striped table-condensed"><br><tr><br><th width="20%">类型</th><br><th width="20%">部分代表</th><br><th width="60%">特点</th><br></tr><br><br><tr><br><td>列存储</td><br><td>Hbase<br>Cassandra<br>Hypertable</td><br><td>顾名思义，是按列存储数据的。最大的特点是方便存储结构化和半结构化数据，方便做数据压缩，对针对某一列或者某几列的查询有非常大的IO优势。</td><br></tr><br><br><tr><br><td>文档存储</td><br><td>MongoDB<br>CouchDB</td><br><td>文档存储一般用类似json的格式存储，存储的内容是文档型的。这样也就有有机会对某些字段建立索引，实现关系数据库的某些功能。</td><br></tr><br><br><tr><br><td>key-value存储</td><br><td>“Tokyo Cabinet/Tyrant<br>Berkeley DB<br>MemcacheDB<br>Redis</td><br><td>可以通过key快速查询到其value。一般来说，存储不管value的格式，照单全收。（Redis包含了其他功能）</td><br></tr><br><br><tr><br><td>图存储</td><br><td>Neo4J<br>FlockDB</td><br><td>图形关系的最佳存储。使用传统关系数据库来解决的话性能低下，而且设计使用不方便。</td><br></tr><br><br><tr><br><td>对象存储</td><br><td>db4o<br>Versant</td><br><td>通过类似面向对象语言的语法操作数据库，通过对象的方式存取数据。</td><br></tr><br><br><tr><br><td>xml数据库</td><br><td>Berkeley DB XML<br>BaseX</td><br><td>高效的存储XML数据，并支持XML的内部查询语法，比如XQuery,Xpath。</td><br></tr><br></table>
+
+<p>btw:markdown自带的表格真的难用暴了，列宽不能设置，最后用了html= =以后还是做图片吧～</p>
+<h2 id="参考内容"><a href="#参考内容" class="headerlink" title="参考内容"></a>参考内容</h2><p><a href="http://www.36dsj.com/archives/16986" target="_blank" rel="noopener">全面梳理SQL和NoSQL数据库的技术差别</a><br><a href="http://www.runoob.com/mongodb/nosql.html" target="_blank" rel="noopener">NoSQL 简介</a></p>
+</div><div class="tags"><a href="/tags/data/">data</a><a href="/tags/sql/">sql</a></div><div class="post-nav"><a class="pre" href="/2016/06/27/停电/">停电</a><a class="next" href="/2016/06/12/《女心理师》/">《女心理师》</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://octopusmiu.github.io"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/个人管理/">个人管理</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/动漫/">动漫</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/建站/">建站</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/思考/">思考</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据相关/">数据相关</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/日常/">日常</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/游戏/">游戏</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活/">生活</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/电影/">电影</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">4</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/阅读/" style="font-size: 15px;">阅读</a> <a href="/tags/生活/" style="font-size: 15px;">生活</a> <a href="/tags/马拉松/" style="font-size: 15px;">马拉松</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/updated/" style="font-size: 15px;">updated</a> <a href="/tags/data/" style="font-size: 15px;">data</a> <a href="/tags/日常/" style="font-size: 15px;">日常</a> <a href="/tags/minecraft/" style="font-size: 15px;">minecraft</a> <a href="/tags/建站/" style="font-size: 15px;">建站</a> <a href="/tags/游戏/" style="font-size: 15px;">游戏</a> <a href="/tags/电影/" style="font-size: 15px;">电影</a> <a href="/tags/跑步/" style="font-size: 15px;">跑步</a> <a href="/tags/动漫/" style="font-size: 15px;">动漫</a> <a href="/tags/漫威/" style="font-size: 15px;">漫威</a> <a href="/tags/新海诚/" style="font-size: 15px;">新海诚</a> <a href="/tags/歌/" style="font-size: 15px;">歌</a> <a href="/tags/行业/" style="font-size: 15px;">行业</a> <a href="/tags/经验/" style="font-size: 15px;">经验</a> <a href="/tags/时间管理/" style="font-size: 15px;">时间管理</a> <a href="/tags/读书笔记/" style="font-size: 15px;">读书笔记</a> <a href="/tags/life/" style="font-size: 15px;">life</a> <a href="/tags/sql/" style="font-size: 15px;">sql</a> <a href="/tags/统计/" style="font-size: 15px;">统计</a> <a href="/tags/思考/" style="font-size: 15px;">思考</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/11/22/2018-11-22/">Thu Nov 22 2018 00:00:00 GMT+0800 (GMT+08:00)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/11/14/柯南剧场版/">柯南剧场版</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/16/《言叶之庭》-动画/">《言叶之庭》-动画</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/31/2017年的十件事/">2017年的十件事</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/26/我的爸爸/">我的爸爸</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/18/《正义联盟》之我眼中的蝙蝠侠/">《正义联盟》之我眼中的蝙蝠侠</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/06/《雷神3》人物介绍/">《雷神3》人物介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/04/漫威的乐趣在哪里？/">漫威的乐趣在哪里？</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/01/重启·Day01/">重启·Day01</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/01/《降临》/">《降临》</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">octopusmiu.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
